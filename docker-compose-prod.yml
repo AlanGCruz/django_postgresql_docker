@@ -1,0 +1,45 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: production
+      DATABASE: production
+
+  web:
+    build: .
+    restart: always
+    command: gunicorn API.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - type: volume
+        source: static_volume
+        target: /app/staticfiles
+    expose:
+      - 8000
+    depends_on:
+      - db
+    environment:
+      DATABASE: postgres
+      DB_PORT: 5432
+      DB_HOST: db
+
+  nginx:
+    build: ./nginx
+    ports:
+      - 1337:80
+    volumes:
+      - type: volume
+        source: static_volume
+        target: /app/staticfiles
+    depends_on:
+      - web
+
+volumes:
+  pgdata:
+  static_volume:

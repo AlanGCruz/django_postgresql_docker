@@ -1,0 +1,30 @@
+version: '3.7'
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - type: volume
+        source: pgdata
+        target: /var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: "${DB_PASSWORD}"
+      POSTGRES_DB: "${DB_NAME}"
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - type: bind
+        source: ./
+        target: /app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    environment:
+      DATABASE: postgres
+      DB_PORT: 5432
+      DB_HOST: db
+
+volumes:
+  pgdata:
