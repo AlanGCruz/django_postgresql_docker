@@ -7,7 +7,7 @@ verify_ssl = true
 django-dotenv = "*"
 
 [packages]
-django = "*"
+django = "2.2.4"
 psycopg2 = "*"
 
 [requires]
